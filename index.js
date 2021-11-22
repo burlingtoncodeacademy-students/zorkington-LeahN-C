@@ -15,7 +15,7 @@ function ask(questionText) {
 //Call the function
 start();
 
-//async function to tell user about the scene and allow user to input text
+//ASYNC FUNCTION to tell user about the scene and allow user to input text
 async function start() {
   //welcome message
   const welcomeMessage = `\nYou are standing in the sand on a beach. You look around and the only thing you see is a door in front of you with a keypad on the handle. When you look more closely, you see that on the door is a handwritten sign. \nWhat would you like to do? `;
@@ -23,7 +23,7 @@ async function start() {
   let answer = await ask(welcomeMessage);
   //assigning answer to answer to make a string
   answer = answer;
-  //while the user's answer does not include the words "read sign"...
+  // ------------- READ THE SIGN -----------
   while (
     answer !== answer.includes("read sign") ||
     answer !== answer.includes("read")
@@ -31,26 +31,53 @@ async function start() {
     //if user's answer DOES include "read sign", read the sign
     if (answer.includes("read sign") || answer.includes("read")) {
       console.log(
-        "\nThe sign reads... \n'Through this door are truths and lies. \nWhich will you choose? Which will be your demise? \nIf you dare to enter now, your choice will be your final vow... \nThe code, one two three four five six, will give you access but may be a trick... \nEnter at your own risk.' "
+        "\nThe sign reads... \n'Through this door are truths and lies. \nWhich will you choose? Which will be your demise? \nIf you dare to enter now, your choice will be your final vow... \nThe code, one two three four five six, will give you access but may be a trick... \nEnter at your own risk.' \n\nYou look again at the keypad on the door handle... "
       );
       //and then ask user what they'd like to do next
       answer = await ask("What would you like to do? ");
       //reassign the new answer to answer
       answer = answer;
-      //while the user's answer doesn't include "enter code"...
+      // ---------- ENTER THE CODE -----------
       while (
         answer !== answer.includes("enter code") ||
-        answer !== answer.includes("enter")
+        answer !== answer.includes("enter") ||
+        answer !== answer.includes("look at keypad")
       ) {
         //if the user's answer DOES include "enter code"...
-        if (answer.includes("enter code") || answer.includes("enter")
+        if (
+          answer.includes("enter code") ||
+          answer.includes("enter") ||
+          answer.includes("look at keypad")
         ) {
-          //print this message
-          console.log(
-            "\nYou press the numbers 1, 2, 3, 4, 5, and 6. \nYou hear a click, and the door opens... \n\nYou step into the room and see a bookshelf and a desk. "
+          console.log("\nYou look at the numbers on the keypad. ");
+          //ask user for the code
+          answer = await ask(
+            "Which numbers would you like to enter into the keypad? "
           );
-          //and then ask user what they'd like to do next
-          answer = await ask("What would you like to do? ");
+          answer = answer;
+          // ------------ INPUT CODE -----------
+          while (answer !== answer.includes("123456")) {
+            //if it is correct...
+            if (answer === "123456") {
+              //print this message
+              console.log(
+                "\nYou press the numbers 1, 2, 3, 4, 5, and 6. \nYou hear a click, and the door opens... \n\nYou step into the room and see a bookshelf and a desk. "
+              );
+              //and then ask user what they'd like to do next
+              answer = await ask("What would you like to do? ");
+              answer = answer;
+              // ---------------- STARTING ROOM -------------
+            }
+            //otherwise, print this message and tell them to try again
+            else {
+              console.log(
+                "\nYou enter the numbers " +
+                  answer +
+                  ", but the door does not unlock. "
+              );
+              answer = await ask("Which numbers would you like to enter? ");
+            }
+          }
         }
         //otherwise, print "I dont know how to..."
         else {
@@ -61,7 +88,7 @@ async function start() {
     }
     //if user's answer includes the word "take", tell user it would be selfish to take the sign
     else if (answer.includes("take")) {
-      console.log("\nYou cannot take the sign. ");
+      console.log("\nThat would be selfish, other people may need it, too. ");
       answer = await ask("What would you like to do? ");
     }
     //otherwise, tell user "I don't know how to..."
