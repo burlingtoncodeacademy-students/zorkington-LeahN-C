@@ -10,14 +10,29 @@ function ask(questionText) {
   });
 }
 
-/* --------------- Global Variables ------------- */
+/* --------------- Lookup Table ------------- */
+//
+////creating the class "Room"
+//class Room {
+//  constuctor(name, description, inventory, connectsTo) {
+//    this.name = name;
+//    this.description = description;
+//    this.inventory = inventory;
+//    this.connectsTo = connectsTo;
+//  }
+//}
+//
+////the different rooms
+//let beach = new Room('beach', /*description*/ 'sign', ['study']);
+//let study = new Room('study', /*description*/ ('bookshelf', 'desk'), ['beach', 'kitchen']);
+//
 
 //Call the function
 start();
 
 //ASYNC FUNCTION to tell user about the scene and allow user to input text
 async function start() {
-  //welcome message
+  // -------------- welcome message ---------------
   const welcomeMessage = `\nYou are standing in the sand on a beach. You look around and the only thing you see is a door in front of you with a keypad on the handle. When you look more closely, you see that on the door is a handwritten sign. \nWhat would you like to do? `;
   //assigning "answer" to user's response to welcome message
   let answer = await ask(welcomeMessage);
@@ -31,7 +46,7 @@ async function start() {
     //if user's answer DOES include "read sign", read the sign
     if (answer.includes("read sign") || answer.includes("read")) {
       console.log(
-        "\nThe sign reads... \n'Through this door are truths and lies. \nWhich will you choose? Which will be your demise? \nIf you dare to enter now, your choice will be your final vow... \nThe code, one two three four five six, will give you access but may be a trick... \nEnter at your own risk.' \n\nYou look again at the keypad on the door handle... "
+        "\nThe sign reads... \n'Through this door are truths and lies. \nWhich will you choose? Which will be your demise? \nIf you dare to enter now, your choice will be your final vow... \nThe code, one two three four five six, will give you access but may be a trick... \nEnter at your own risk.'"
       );
       //and then ask user what they'd like to do next
       answer = await ask("What would you like to do? ");
@@ -41,13 +56,13 @@ async function start() {
       while (
         answer !== answer.includes("enter code") ||
         answer !== answer.includes("enter") ||
-        answer !== answer.includes("look at keypad")
+        answer !== answer.includes("keypad")
       ) {
         //if the user's answer DOES include "enter code"...
         if (
           answer.includes("enter code") ||
           answer.includes("enter") ||
-          answer.includes("look at keypad")
+          answer.includes("keypad")
         ) {
           console.log("\nYou look at the numbers on the keypad. ");
           //ask user for the code
@@ -66,7 +81,7 @@ async function start() {
               //and then ask user what they'd like to do next
               answer = await ask("What would you like to do? ");
               answer = answer;
-              // ---------------- STARTING ROOM -------------
+              // ---------------- NEXT ROOM -------------
             }
             //otherwise, print this message and tell them to try again
             else {
@@ -78,6 +93,13 @@ async function start() {
               answer = await ask("Which numbers would you like to enter? ");
             }
           }
+        }
+        //if the user tries to open the door, it is LOCKED
+        else if (answer.includes("open")) {
+          console.log(
+            "\nThe door is locked, there is a keypad on the door handle. "
+          );
+          answer = await ask("What would you like to do? ");
         }
         //otherwise, print "I dont know how to..."
         else {
@@ -100,6 +122,12 @@ async function start() {
   console.log("Now write your code to make this work!");
   process.exit();
 }
+
+
+
+
+
+
 
 //Starting place...
 //??
