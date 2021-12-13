@@ -1,10 +1,10 @@
-//Game that allows moving between locations freely - no locked doors
-//Can pick up items and examine items
-//Need to create 'if' blocks and run functions for when user interacts with the items (eg "enter numbers 123456")
-//If "123456", then study === unlocked (location.locked === false)
-// DONE //Create function to drop items (inverse of take function) -- use .push to push from player inventory to room inventory and vise versa
+//DONE //Game that allows moving between locations freely - no locked doors
+//DONE //Can pick up items and examine items
+//DONE //Need to create 'if' blocks and run functions for when user interacts with the items (eg "enter numbers 123456")
+//DONE //If "123456", then study === unlocked (location.locked === false)
+//DONE //Create function to drop items (inverse of take function) -- use .push to push from player inventory to room inventory and vise versa
 //DONE //Continue using "if" logic inside while loop (eg else if (actionsLookupdresser.examine.includes(actions))
-//Need process.exit() at end of while loop inside async function with "YAY YOU GOT OUT"
+//DONE //Need process.exit() at end of while loop inside async function with "YAY YOU GOT OUT"
 
 /* --------------------- Boiler Plate -------------------- */
 
