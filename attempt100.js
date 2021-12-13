@@ -3,7 +3,7 @@
 //DONE //Need to create 'if' blocks and run functions for when user interacts with the items (eg "enter numbers 123456")
 //DONE //If "123456", then study === unlocked (location.locked === false)
 //DONE //Create function to drop items (inverse of take function) -- use .push to push from player inventory to room inventory and vise versa
-//DONE //Continue using "if" logic inside while loop (eg else if (actionsLookupdresser.examine.includes(actions))
+//DONE //Continue using "if" logic inside while loop (eg else if (actionsLookupTable.examine.includes(actions))
 //DONE //Need process.exit() at end of while loop inside async function with "YAY YOU GOT OUT"
 
 /* --------------------- Boiler Plate -------------------- */
@@ -20,6 +20,7 @@ function ask(questionText) {
   });
 }
 
+//Function to clean up user's input so the computer recognizes each word
 function cleanWords(userInput) {
   let cleanUp = userInput.toString().trim().toLowerCase();
   return cleanUp;
@@ -27,15 +28,22 @@ function cleanWords(userInput) {
 
 /* ----------------------------- Functions Functions -------------------------- */
 
+//Function to change between rooms
 function changeRooms(newLocation) {
+  //Referring to valid transitions shown in the "Location Changes" section
   let validTransitions = locations[currentLocation].canMoveTo;
+  //If the transition is valid...
   if (validTransitions.includes(newLocation)) {
+    //Then the player moves to the next room 
     currentLocation = newLocation;
-    let currentState = roomsLookupdresser[currentLocation];
+    //The current state is the current location
+    let currentState = roomsLookupTable[currentLocation];
     console.log(currentState.description);
-  } else if (newLocation.locked === true) {
+  } //If the new location is locked, player cannot enter
+  else if (newLocation.locked === true) {
       console.log("The door is locked. ") 
-  } else {
+  } //And if it is not a valid transition, the player cannot move directly there
+  else {
     console.log(
       "You cannot move directly from the " +
         currentLocation +
@@ -44,45 +52,60 @@ function changeRooms(newLocation) {
         ". "
     );
   }
-  player.location = roomsLookupdresser[currentLocation];
+  //The player is in the current location
+  player.location = roomsLookupTable[currentLocation];
 }
 
+//Function to take items
 function takeItems(takeableItem) {
-  let canTake = itemsLookupdresser[takeableItem];
+  //Assigning canTake to items from the lookup table
+  let canTake = itemsLookupTable[takeableItem];
+//If the item is takeable and the player is in a room with the takeable item...
   if (
     canTake.takeable === true &&
     player.location.inventory.includes(takeableItem)
   ) {
+    //The item is added to the end of the player's inventory list
     player.location.inventory.splice(
       player.location.inventory.indexOf(takeableItem),
       1
     );
     player.inventory.push(takeableItem);
+    //Computer prints that player has the item
     console.log("You now have the " + takeableItem + " in your inventory. ");
+    //And prints the item's description
     console.log(canTake.description);
-  } else {
+  } //Otherwise, tells user they can't take the untakeable item
+  else {
     console.log("You cannot take that. ");
   }
 }
 
+//Function to drop items
 function dropItems(inventoryItem) {
-  //let dropIt = itemsLookupdresser[inventoryItem];
+  //If the player has an item in inventory
   if (player.inventory.includes(inventoryItem)) {
+    //Drop the item into the current room
     player.inventory.splice(player.inventory.indexOf(inventoryItem));
     player.location.inventory.push(inventoryItem);
     console.log("You dropped the " + inventoryItem + " from your inventory. ");
-  } else {
+  } //If the item doesn't belong in the current room, tell player to drop in the right room
+  else {
     console.log("Please put that back where you found it. ");
   }
 }
 
+//Function to examine items
 function examineItems(examinableItem) {
-  let lookAt = itemsLookupdresser[examinableItem];
+  //If the item is from the lookup table
+  let lookAt = itemsLookupTable[examinableItem];
+  //Print the description
   console.log(lookAt.description);
 }
 
 /* ------------------------------- Player Info -------------------------------- */
 
+//Player starts with no inventory
 let player = {
   inventory: [],
   location: null,
@@ -216,10 +239,10 @@ const lever = new Item(
   true
 );
 
-/* ------------------------------- Lookup dressers ------------------------------ */
+/* ------------------------------- Lookup Tables ------------------------------ */
 
-//Lookup dresser to reference rooms
-let roomsLookupdresser = {
+//Lookup table to reference rooms
+let roomsLookupTable = {
   beach: beach,
   study: study,
   livingroom: livingroom,
@@ -230,8 +253,8 @@ let roomsLookupdresser = {
   outside: outside,
 };
 
-//Lookup dresser to reference items
-let itemsLookupdresser = {
+//Lookup table to reference items
+let itemsLookupTable = {
   sign: sign,
   bookshelf: bookshelf,
   key: key,
@@ -243,8 +266,8 @@ let itemsLookupdresser = {
   lever: lever,
 };
 
-//Lookup dresser to reference actions
-let actionsLookupdresser = {
+//Lookup table to reference actions
+let actionsLookupTable = {
   take: ["take", "pick", "grab", "get"],
   drop: ["drop", "put"],
   examine: [
@@ -268,52 +291,96 @@ let actionsLookupdresser = {
 
 gameStart();
 
-//Intro function to start the game
+//Function to run the whole game
 async function gameStart() {
+  //Starting with the beach description
   console.log(beach.description);
+  //Player starts on the beach
   player.location = beach;
+  //While the player is not outside...
   while (player.location !== outside) {
+    //This is the user's input
     let initialInput = await ask(">");
+    //This is the user's input being cleaned in the "cleanWords" function at the top
     let cleanOutput = cleanWords(initialInput);
+    //This is the clean array once it's been split up
     let cleanInputArray = cleanOutput.split(" ");
+    //Computer can now recognize actions at the beginning of the user's input...
     let actions = cleanInputArray[0];
+    //And items at the end of the user's input
     let useableItems = cleanInputArray[cleanInputArray.length - 1];
-    if (actionsLookupdresser.move.includes(actions)) {
+    //If the action word is included in the "move" actions from the lookup table...
+    if (actionsLookupTable.move.includes(actions)) {
+      //Then the input can be run through the "changeRooms" function at the top
       changeRooms(useableItems);
-    } else if (actionsLookupdresser.take.includes(actions)) {
+    } //If the action word is included in the "take" actions...
+    else if (actionsLookupTable.take.includes(actions)) {
+      //Run input through the "takeItems" function
       takeItems(useableItems);
-    } else if (actionsLookupdresser.examine.includes(actions)) {
+    } //If the action word is included in the "examine" actions...
+    else if (actionsLookupTable.examine.includes(actions)) {
+      //Run the input through the "examineItems" function
       examineItems(useableItems);
-    } else if (actionsLookupdresser.drop.includes(actions)) {
+    } //If the item exists
+    else if (actionsLookupTable.drop.includes(actions)) {
+      //Run it through the "dropItems" function
       dropItems(useableItems);
-    } else if (initialInput.includes("123456")) {
+    } //If the input includes this string
+    else if (initialInput.includes("123456")) {
+      //The study is unlocked
         study.locked === false;
+        //Move to the study
         changeRooms("study");
-    } else if (initialInput.includes("door")) {
+    } //If the input includes this string
+    else if (initialInput.includes("door")) {
+      //The livingroom is unlocked
         livingroom.locked === false;
+        //Move to the livingroom
         changeRooms("livingroom");
-    } else if (initialInput.includes("up, down, left, right") || initialInput.includes("up down left and right") || initialInput.includes("up down left right")) {
-        bedroom.locked === false;
+    } //If the input includes any of these strings
+    else if (initialInput.includes("up, down, left, right") || initialInput.includes("up down left and right") || initialInput.includes("up down left right")) {
+        //The bedroom is unlocked
+      bedroom.locked === false;
+      //Move to the bedroom
         changeRooms("bedroom");
-    } else if (initialInput.includes("dresser")) {
+    } //If input includes this string
+    else if (initialInput.includes("dresser")) {
+      //Print "dresser" description
         console.log(dresser.description)
-    } else if (initialInput.includes("button")) {
+    } //If input includes this string
+    else if (initialInput.includes("button")) {
+      //Print "button" description
         console.log(button.description);
+        //The bathroom is unlocked
         bathroom.locked === false;
+        //Move to the bathroom
         changeRooms("bathroom");
-    } else if (initialInput.includes("maple") || initialInput.includes("Maple")) {
+    } //If input includes either of these strings
+    else if (initialInput.includes("maple") || initialInput.includes("Maple")) {
+      //The diningroom is unlocked
         diningroom.locked === false;
+        //Move to the diningroom
         changeRooms("diningroom");
-    } else if (initialInput.includes("picture")) {
+    } //If input includes this string
+    else if (initialInput.includes("picture")) {
+      //The kitchen is unlocked
         kitchen.locked === false;
+        //Print the "kitchen" description
         console.log(kitchen.description);
+        //Move to the kitchen
         changeRooms("kitchen");
-    } else if (initialInput.includes("lever")) {
+    } //If the input includes this string
+    else if (initialInput.includes("lever")) {
+      //The outside door is unlocked
         outside.locked === false;
+        //Print the "lever" description
         console.log(lever.description);
-    } else if (initialInput.includes("go outside")) {
+    } //If the input includes this string
+    else if (initialInput.includes("go outside")) {
+      //End the game!
         process.exit();
-    } else {
+    } //Otherwise, tell user can't do what they're asking
+    else {
         console.log("I don't know how to " + initialInput + ". ")
     }
   } 
